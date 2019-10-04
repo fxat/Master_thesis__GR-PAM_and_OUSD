@@ -1,0 +1,56 @@
+\pagebreak
+
+
+\ifthenelse{\boolean{oddpage}}{}{\newpage	\thispagestyle{empty}	\section*{} \pagebreak}
+
+\thispagestyle{empty}
+\begin{minipage}[c][\textheight]	{\textwidth}
+	\thispagestyle{empty}
+	\begin{center}
+	\addsec{\hfil Appendix }
+	\end{center}
+\end{minipage}
+
+\pagebreak
+\appendix
+\renewcommand \thesubsection {\Roman{subsection}}
+
+
+
+\renewcommand{\refname}{}
+\subsection{Bibliography}
+
+\refstepcounter{section} 
+%\bibliographystyle{alphadin}
+%\printbibheading
+\printbibliography
+%\bibliography{literature.bib}
+\pagebreak
+
+\renewcommand\listfigurename{}
+\subsection{List of figures}
+\listoffigures
+\pagebreak
+
+\renewcommand\listtablename{}
+\subsection{List of tables}
+\listoftables
+\pagebreak
+
+\input{08_appendix/files/listOfAbbreviations}
+\pagebreak
+\input{08_appendix/files/listOfSymbols}
+\pagebreak
+\subsection{Ultrasonic transducer datasheet}
+\label{app:datasheetUST}
+
+	\centering
+	\includegraphics[ height=0.95\textheight, width=\textwidth]{08_appendix/files/datasheetUStransducer.pdf}
+
+
+\subsection{Photoacoustic signal generation - simulation program}
+\label{app:PAgen}
+	\centering
+\includegraphics[ page=1, height=0.95\textheight, width=\textwidth]{08_appendix/files/APPpulseSim.pdf}
+\includegraphics[ page=2, height=0.95\textheight, width=\textwidth]{08_appendix/files/APPpulseSim.pdf}
+\includegraphics[ page=3, height=0.95\textheight, width=\textwidth]{08_appendix/files/APPpulseSim.pdf}

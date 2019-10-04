@@ -1,0 +1,138 @@
+% author: Franz Taffner
+% year: 2017
+% institute: University of Graz
+
+\documentclass[
+a4paper, 
+oneside,
+12pt         % set default font size to 12 point
+]{scrartcl} 
+
+% inputenc: coding of german special characters
+\usepackage[utf8]{inputenc}
+
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage[backend = biber, style=numeric-comp, sorting=none, natbib=true, maxbibnames=25, hyperref=true]{biblatex}
+\addbibresource{_literature/literature.bib}
+
+
+
+% fontenc, ae, aecompl: coding of characters in PDF documents
+\usepackage[T1]{fontenc}
+\usepackage{ae,aecompl}
+
+% amsmath, amssymb, amstext: support for mathematics
+\usepackage{amsmath,amssymb,amstext}
+
+% units: technical units
+\usepackage{units}
+
+% LAYOUT
+
+\usepackage{scrpage2}
+
+%% PDF
+
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+% definitions for using pdflatex instead of latex
+
+\ifpdfoutput{
+
+	\usepackage[pdftex]{graphicx}
+	
+	\pdfcompresslevel=9
+	
+	%hyperref (hyperlinks in PDF)
+
+	\usepackage[	
+	pdftex=true,
+	backref=true,      
+	pagebackref=false, 
+	colorlinks=true,   
+	bookmarks=true,          
+	bookmarksopen=false,     
+	bookmarksnumbered=false, 
+	pdfpagemode=None         
+	]{hyperref}
+
+	\DeclareGraphicsExtensions{.pdf}
+	
+}{	
+	\usepackage[dvips]{graphicx}
+	
+	\DeclareGraphicsExtensions{.eps}
+	
+	\usepackage[
+	dvips,
+	colorlinks=false
+	]{hyperref}	
+}
+
+\usepackage{booktabs}
+
+\usepackage{hyperref}
+\hypersetup{
+	pdftitle    = {GR-PAM with optical US detection},
+	pdfauthor   = {Franz Taffner},
+	pdfkeywords = {2017},linkcolor=blue
+}
+
+\newcommand{\mygraphics}[3]{
+	\begin{center}
+		\includegraphics[width=#1, keepaspectratio=true]{#2} \\
+		\textbf{#3}
+	\end{center}
+}
+
+\usepackage{scrpage2}
+\pagestyle{scrheadings}
+\usepackage{float}
+\usepackage{tabu}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{pdfpages} 
+\usepackage{listings}
+\usepackage[titletoc]{appendix}
+\usepackage{longtable}
+\usepackage{ifthen,changepage}
+
+% DOKUMENT
+
+\begin{document}
+
+\renewcommand{\contentsname}{Table of contents}
+
+\begingroup
+
+	\include{00_coverpage/coverpage}
+	\pagestyle{empty}
+	\tableofcontents 
+	\clearpage	
+\endgroup
+
+\begingroup
+
+\pagestyle{plain}
+
+\setcounter{page}{1}
+\include{01_introduction/introduction}
+\include{02_principles_of_photoacoustics/principlesOfPhotoacoustics}
+\include{03_GR-PAM_theory/GR_PAM}
+\include{04_ex-results_of_PAM/resultsPAM}
+\include{05_OUSD/opticalUSdetect}
+\include{06_ex-results_of_OUSD/resultsOUSD}
+\include{07_conclusion/conclusio}
+
+\include{08_appendix/appendix}
+
+\endgroup
+
+\end{document}
