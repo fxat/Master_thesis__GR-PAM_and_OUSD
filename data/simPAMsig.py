@@ -17,6 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+#%%
 #####[ DEFINES ]#########################################################
 
 N = int(1e5) # Number of datapoints
@@ -36,8 +37,8 @@ p0 = F * mu_a * gamma   # Initial preasure rise
 t_max = 2 * z / cs
 t = np.linspace(0, t_max, N)    # Time intervall
 dt = t[1] - t[0]
-#freq = np.linspace(0, 1/np.max(t), (N-1)/np.max(t))
-#freq = freq - np.max(freq)/2
+freq = np.linspace(0, (N-1)/np.max(t), len(t))
+freq = freq - np.max(freq)/2
 
 #%% Delta pulse excitation of a shere
 
@@ -55,7 +56,7 @@ ax_pP.grid()
 
 #%% Gaussian temporal profil of a excitation laser pulse
 
-tp = 10e-9
+tp = 10e-9      # Temporal laser pulse width [ns] 
 t0 = t_max/2
 
 sigma = tp/(2*np.sqrt(2*np.log(2)))
@@ -89,6 +90,25 @@ ax_sigSphere.grid()
 
 #%% Spectrum of the spherical signal
 
+fourierT_sigSphere = np.fft.fftshift(np.fft.fft(sigSphere['sigSphere']))
+absFFT_sigSphere = np.abs(fourierT_sigSphere)
+absFFT_sigSphere = absFFT_sigSphere/np.max(absFFT_sigSphere)    # Normalize sprectra
+
+fft_sigSphereData = {'freq': freq, 'fftSigSphere': absFFT_sigSphere}
+fft_sigSphere = pd.DataFrame(fft_sigSphereData, dtype=float)
+
+ax_fftSigSphere = fft_sigSphere.plot(x ='freq', y='fftSigSphere')
+ax_fftSigSphere.set_title('Frequency spectrum of an ideal Signal')
+ax_fftSigSphere.set_xlabel('f in Hz')
+ax_fftSigSphere.set_ylabel('N.A')
+ax_fftSigSphere.set_xlim(-200e6, 200e6)
+ax_fftSigSphere.grid()
+
+#%% Construct sensor transfer function
+
+sensor_fc = 50e6        # Sensor center frequency [Hz]
+sensor_bw = 0.7 * sensor_fc # Sensor bandwidth [Hz]
+
 
 
 print('x')
@@ -98,10 +118,3 @@ print('x')
 plt.show()
 
 
-def main():
-    pass
-
-if __name__ == '__main__':   
-    main()
-
-# %%
