@@ -11,14 +11,15 @@ __email__ = "franz.taffner@yahoo.de"
 """
 
 #%%
-#####[ IMPORTS ]#########################################################
+#####[ IMPORTS ]###############################################################
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.signal as sps
 
 #%%
-#####[ DEFINES ]#########################################################
+#####[ DEFINES ]###############################################################
 
 N = int(1e5) # Number of datapoints
 
@@ -30,7 +31,7 @@ F = 200         # Fluence [J/m]
 mu_a = 20000    # Absorption coefficient [1/m]
 gamma = 0.11    # Grueneisen Parameter
 
-#####[ PRECONDITIONS ]####################################################
+#####[ PRECONDITIONS ]#########################################################
 
 p0 = F * mu_a * gamma   # Initial preasure rise
 
@@ -94,10 +95,12 @@ fourierT_sigSphere = np.fft.fftshift(np.fft.fft(sigSphere['sigSphere']))
 absFFT_sigSphere = np.abs(fourierT_sigSphere)
 absFFT_sigSphere = absFFT_sigSphere/np.max(absFFT_sigSphere)    # Normalize sprectra
 
-fft_sigSphereData = {'freq': freq, 'fftSigSphere': absFFT_sigSphere}
+fftSigSphereNorm = absFFT_sigSphere/np.max(absFFT_sigSphere)
+
+fft_sigSphereData = {'freq': freq, 'fftSigSphere': fourierT_sigSphere, 'absfftSigSphere': absFFT_sigSphere, 'fftSigSphereNorm': fftSigSphereNorm}
 fft_sigSphere = pd.DataFrame(fft_sigSphereData, dtype=float)
 
-ax_fftSigSphere = fft_sigSphere.plot(x ='freq', y='fftSigSphere')
+ax_fftSigSphere = fft_sigSphere.plot(x='freq', y='absfftSigSphere')
 ax_fftSigSphere.set_title('Frequency spectrum of an ideal Signal')
 ax_fftSigSphere.set_xlabel('f in Hz')
 ax_fftSigSphere.set_ylabel('N.A')
@@ -106,8 +109,39 @@ ax_fftSigSphere.grid()
 
 #%% Construct sensor transfer function
 
-sensor_fc = 50e6        # Sensor center frequency [Hz]
+sensor_fc = 50e6    # Sensor center frequency [Hz]
 sensor_bw = 0.7 * sensor_fc # Sensor bandwidth [Hz]
+
+sensor_sigma = sensor_bw/(2*np.sqrt(2*np.log(2)))
+sensor_as = np.exp(-(np.abs(freq)-sensor_fc)**2/(2*sensor_sigma**2))   # Sensor amplitude spectrum
+
+# To avoid the log(0) -> all 0 are replaced by a min value 
+fract = 100
+sensor_as[np.where(sensor_as < np.max(sensor_as)/fract)] = np.max(sensor_as)/fract
+
+# Sensor response functions phase
+sensor_phi = np.imag(sps.hilbert(np.log(sensor_as)))  
+
+sensor_cf = sensor_as*(np.cos(sensor_phi) - 1j*np.sin(sensor_phi))
+
+sensorData = {'freq': freq, 'cf': sensor_cf, 'as': sensor_as}
+sensor = pd.DataFrame(sensorData, dtype=float)
+
+# Resulting signal spectrum that can be measured at the transducer
+specResultTransducer = fourierT_sigSphere * sensor['cf'] 
+specResultNorm = np.abs(specResultTransducer)/np.max(np.abs(specResultTransducer))
+
+specResData = {'freq': freq, 'specTransMeas': specResultTransducer, 'specTransNorm': specResultNorm}
+transducerSig = pd.DataFrame(specResData, dtype=float)
+
+# TODO: fix specTransNorm
+
+ax_sensor = sensor.plot(x='freq', y='as')
+transducerSig.plot(x='freq', y='specTransNorm', ax=ax_sensor)
+fft_sigSphere.plot(x='freq', y='fftSigSphereNorm', ax=ax_sensor) 
+ax_sensor.set_xlim(-200e6, 200e6)
+
+
 
 
 
