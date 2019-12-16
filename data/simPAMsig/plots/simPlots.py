@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.signal as sps
 
-from .. import constants as C
+import constants as C
 
 class pamPlots:
 
@@ -32,7 +32,7 @@ class pamPlots:
         ax.set_title('Temporal profile of a laser pulse')
         ax.set_xlabel('Time in s')
         ax.set_ylabel('Laser power in N.A.')
-        ax.set_xlim(-2*tp, 2*tp)
+        ax.set_xlim(-2*C.tp, 2*C.tp)
         ax.grid()
 
     def plot_sigSphere(self, ax):
