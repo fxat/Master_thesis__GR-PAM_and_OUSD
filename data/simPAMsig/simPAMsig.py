@@ -108,24 +108,22 @@ sensor_bw = 0.7 * sensor_fc # Sensor bandwidth [Hz]
 
 sensor_sigma = sensor_bw/(2*np.sqrt(2*np.log(2)))
 # Sensor amplitude spectrum
-sensor_as = np.exp(-(np.abs(freq)-sensor_fc)**2/(2*sensor_sigma**2))   
+sensor_as = np.exp(-(np.abs(freq)-sensor_fc)**2/(2*sensor_sigma**2)) 
 
 # To avoid the log(0) -> all 0 are replaced by a min value 
 fract = 100
 sensor_as[np.where(sensor_as < np.max(sensor_as)/fract)] = np.max(sensor_as)/fract
-print(np.min(sensor_as))
+
 # Sensor response functions phase
-# TODO: fix hilbert trans
-sensor_phi = sps.hilbert(sensor_as).imag
-plt.figure()
-plt.plot(sensor_phi)
+sensor_phi = np.imag(sps.hilbert(np.log(sensor_as)))
+
 sensor_cf = sensor_as*(np.cos(sensor_phi) - 1j*np.sin(sensor_phi))
 
 sensorData = {'freq': freq, 'cf': sensor_cf, 'as': sensor_as}
-sensor = pd.DataFrame(sensorData, dtype=float)
+sensor = pd.DataFrame(sensorData)
 
 # Resulting signal spectrum that can be measured at the transducer
-specResultTransducer = fourierT_sigSphere * sensor['cf'] 
+specResultTransducer = fourierT_sigSphere * sensor['cf']
 specResultNorm = np.abs(specResultTransducer)/np.max(np.abs(specResultTransducer))
 
 specResData = {'freq': freq, 
@@ -141,7 +139,7 @@ ax_sensor.set_xlim(-200e6, 200e6)
 
 #%%
 
-specResultTransducer_temp = np.real(np.fft.ifft(np.fft.ifftshift(specResultTransducer)))
+specResultTransducer_temp = np.fft.ifft(np.fft.ifftshift(specResultTransducer)).real
 specResultTransducerData_temp = {'dist': cs*t, 
                                 'tempSig': p0*specResultTransducer_temp,
                                 'sigSphere': p0*sigSphere['sigSphere']}
