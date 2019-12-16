@@ -113,11 +113,12 @@ sensor_as = np.exp(-(np.abs(freq)-sensor_fc)**2/(2*sensor_sigma**2))
 # To avoid the log(0) -> all 0 are replaced by a min value 
 fract = 100
 sensor_as[np.where(sensor_as < np.max(sensor_as)/fract)] = np.max(sensor_as)/fract
-
+print(np.min(sensor_as))
 # Sensor response functions phase
 # TODO: fix hilbert trans
-sensor_phi = sps.hilbert(np.log(sensor_as)).imag
-
+sensor_phi = sps.hilbert(sensor_as).imag
+plt.figure()
+plt.plot(sensor_phi)
 sensor_cf = sensor_as*(np.cos(sensor_phi) - 1j*np.sin(sensor_phi))
 
 sensorData = {'freq': freq, 'cf': sensor_cf, 'as': sensor_as}

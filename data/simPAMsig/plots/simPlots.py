@@ -18,8 +18,6 @@ import pandas as pd
 import scipy.signal as sps
 
 class pamPlots:
-    def __init__(self):
-        pass
 
     def plot_pP(self, ax):
         ax.set_title('Pressure signal: $\delta$-peak excitation')
@@ -59,4 +57,3 @@ class pamPlots:
         ax.set_ylabel('p in Pa')
         ax.grid()
     
-    #def 
