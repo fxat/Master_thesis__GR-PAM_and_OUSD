@@ -22,7 +22,12 @@ gamma = 0.11    # Grueneisen Parameter
 
 t_max = 2 * z / cs
 
-#%% Laserpulse
+# Laserpulse
 
 tp = 10e-9      # Temporal laser pulse width [ns] 
 t0 = t_max/2
+
+# Sensor
+
+sensor_fc = 50e6    # Sensor center frequency [Hz]
+sensor_bw = 0.7 * sensor_fc # Sensor bandwidth [Hz]
