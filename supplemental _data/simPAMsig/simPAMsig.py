@@ -66,19 +66,19 @@ class photoAcousticSignal:
         laserPulseData = {'lPtime': t_shift, 'lPpowerNormed': LP}
 
         self.laserPulse = pd.DataFrame(laserPulseData, dtype=float)
+
         ax_laserPulse = self.laserPulse.plot(x='lPtime', y='lPpowerNormed')
         self.pamSimPlots.plot_laserPulse(ax_laserPulse)
 
     def sphereExciteLaser(self):
         """ 
         Signal of a sphere with finite excitation pulse duration.
-        The convolution of the ideal N-shaped signal with the gaussian 
-        shaped laser pulse gives a realistic source signal
         """
+
         sigSpherePulse = np.convolve(self.pP['preasure'], 
                                     self.laserPulse['lPpowerNormed'], 
                                     mode='same')
-        sigSphereData = {'dist': C.cs*self.t, 'sigSphere': sigSpherePulse}
+        sigSphereData = {'dist': self.dist, 'sigSphere': sigSpherePulse}
         self.sigSphere = pd.DataFrame(sigSphereData, dtype=float)
 
         ax_sigSphere = self.sigSphere.plot(x='dist', y='sigSphere')
@@ -98,18 +98,14 @@ class photoAcousticSignal:
                             'fftSigSphere': fourierT_sigSphere, 
                             'absfftSigSphere': absFFT_sigSphere, 
                             'fftSigSphereNorm': fftSigSphereNorm}
-        self.fft_sigSphere = pd.DataFrame(fft_sigSphereData, dtype=float)
+        self.fft_sigSphere = pd.DataFrame(fft_sigSphereData)
 
         ax_fftSigSphere = self.fft_sigSphere.plot(x='freq', y='absfftSigSphere')
         self.pamSimPlots.plot_fftSigSphere(ax_fftSigSphere)
 
     def sensorTransferFunction(self):
         """ Construct sensor transfer function """
-        """ 
-        The transfer function of a typical ultrasonic detector is 
-        gaussian shaped. Therefore a gaussian shaped function in the 
-        frequency domain is constructed
-        """
+
         sensor_sigma = C.sensor_bw/(2*np.sqrt(2*np.log(2)))
         # Sensor amplitude spectrum
         sensor_as = np.exp(-(np.abs(self.freq)-C.sensor_fc)**2/(2*sensor_sigma**2)) 
@@ -128,22 +124,18 @@ class photoAcousticSignal:
 
     def resTransducerSig(self):
         """ Resulting signal spectrum that can be measured at the transducer """
-        """ 
-        By multiplying the fourier transformed signal of the Sphere 
-        with the complex transfer funtion of the sensor, the result is the 
-        spectrum of the measured signal.
-        """
-        specResultTransducer = self.fft_sigSphere['fourierT_sigSphere'] * self.sensor['cf']
+        
+        specResultTransducer = self.fft_sigSphere['fftSigSphere'] * self.sensor['cf']
         specResultNorm = np.abs(specResultTransducer)/np.max(np.abs(specResultTransducer))
 
-        specResData = {'freq': freq, 
+        specResData = {'freq': self.freq, 
                         'specTransMeas': specResultTransducer, 
                         'specTransNorm': specResultNorm}
-        self.transducerSig = pd.DataFrame(specResData, dtype=float)
+        self.transducerSig = pd.DataFrame(specResData)
 
-        ax_sensor = sensor.plot(x='freq', y='as')
-        transducerSig.plot(x='freq', y='specTransNorm', ax=ax_sensor)
-        fft_sigSphere.plot(x='freq', y='fftSigSphereNorm', ax=ax_sensor) 
+        ax_sensor = self.sensor.plot(x='freq', y='as')
+        self.transducerSig.plot(x='freq', y='specTransNorm', ax=ax_sensor)
+        self.fft_sigSphere.plot(x='freq', y='fftSigSphereNorm', ax=ax_sensor) 
         self.pamSimPlots.plot_sensor(ax_sensor)
 
     def resTempSigPointSphericalSource(self):
@@ -151,19 +143,16 @@ class photoAcousticSignal:
         Resulting temporal signals for a point like detector and a spherical
         detector
         """
-        """
-        By performing the inverse fourier transformation, we get the 
-        temporal measurement signal of the sensor 
-        """
 
-        specResultTransducer_temp = np.fft.ifft(np.fft.ifftshift(self.transducerSig['specResultTransducer'])).real
+        specResultTransducer_temp = np.fft.ifft(np.fft.ifftshift(self.transducerSig['specTransMeas'])).real
+        
         specResultTransducerData_temp = {'dist': self.dist, 
                                         'tempSig': self.p0*specResultTransducer_temp,
-                                        'sigSphere': self.p0*sigSphere['sigSphere']}
-        self.transducerSig_temp = pd.DataFrame(specResultTransducerData_temp, dtype=float)
+                                        'sigSphere': self.p0*self.sigSphere['sigSphere']}
+        self.transducerSig_temp = pd.DataFrame(specResultTransducerData_temp)
 
-        ax_transSigTemp = transducerSig_temp.plot(x='dist', y='tempSig')
-        transducerSig_temp.plot(x='dist', y='sigSphere', ax=ax_transSigTemp)
+        ax_transSigTemp = self.transducerSig_temp.plot(x='dist', y='tempSig')
+        self.transducerSig_temp.plot(x='dist', y='sigSphere', ax=ax_transSigTemp)
         self.pamSimPlots.plot_transSigTemp(ax_transSigTemp)
 
     def plotSim(self):

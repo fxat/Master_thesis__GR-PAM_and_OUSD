@@ -23,6 +23,7 @@ class pamPlots:
 
     def plot_pP(self, ax):
         ax.set_title('Pressure signal: $\delta$-peak excitation')
+        ax.legend(['Bandwidth limited detector'])
         ax.set_xlabel('Distance in m')
         ax.set_ylabel('Preassure in Pa')
         ax.set_xlim((C.z-5*C.a), (C.z+5*C.a))
