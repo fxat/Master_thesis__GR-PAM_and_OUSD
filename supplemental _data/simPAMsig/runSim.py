@@ -19,6 +19,7 @@ from simPAMsig import photoAcousticSignal
 #####[ SIMULATION ]############################################################
 
 def main():
+    
     sim = photoAcousticSignal()
     
     """

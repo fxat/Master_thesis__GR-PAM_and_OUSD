@@ -156,4 +156,5 @@ class photoAcousticSignal:
         self.pamSimPlots.plot_transSigTemp(ax_transSigTemp)
 
     def plotSim(self):
+        plt.subplots_adjust(wspace=0.45)
         plt.show()
