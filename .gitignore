@@ -245,3 +245,4 @@ TSWLatexianTemp*
 
 .vscode/
 __pycache__/
+pandas/
