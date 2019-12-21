@@ -81,9 +81,9 @@ class photoAcousticSignal:
         sigSphereData = {'dist': self.dist, 'sigSphere': sigSpherePulse}
         self.sigSphere = pd.DataFrame(sigSphereData, dtype=float)
 
-        ax_sigSphere = self.sigSphere.plot(x='dist', y='sigSphere')
-        self.pP.plot(x='dist', y='preasure', ax=ax_sigSphere)
-        self.pamSimPlots.plot_sigSphere(ax_sigSphere)
+        #ax_sigSphere = self.sigSphere.plot(x='dist', y='sigSphere')
+        #self.pP.plot(x='dist', y='preasure', ax=ax_sigSphere)
+        #self.pamSimPlots.plot_sigSphere(ax_sigSphere)
 
     def spectrumSphereSig(self):
         """ Spectrum of the spherical signal """
@@ -100,8 +100,8 @@ class photoAcousticSignal:
                             'fftSigSphereNorm': fftSigSphereNorm}
         self.fft_sigSphere = pd.DataFrame(fft_sigSphereData)
 
-        ax_fftSigSphere = self.fft_sigSphere.plot(x='freq', y='absfftSigSphere')
-        self.pamSimPlots.plot_fftSigSphere(ax_fftSigSphere)
+        #ax_fftSigSphere = self.fft_sigSphere.plot(x='freq', y='absfftSigSphere')
+        #self.pamSimPlots.plot_fftSigSphere(ax_fftSigSphere)
 
     def sensorTransferFunction(self):
         """ Construct sensor transfer function """
